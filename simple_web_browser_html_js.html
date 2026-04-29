@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NovaX Browser</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; }
+
+    :root{
+      --bg:#0b0b0f;
+      --panel:#15151c;
+      --text:#ffffff;
+      --accent:#ff3c3c;
+      --accent2:#00c2ff;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 12px;
+      font-size: 12px;
+      background: #0a0a0a;
+      border-bottom: 1px solid #222;
+    }
+
+    .status { color: #00ff88; }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      background: var(--panel);
+      border-bottom: 1px solid #222;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 12px;
+      margin-right: 10px;
+    }
+
+    .brand svg { width: 22px; height: 22px; }
+    .brand span { font-weight: bold; color: var(--accent); }
+
+    .tab {
+      background: #2a2a2a;
+      padding: 7px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .tab.active { background: var(--accent); }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      background: linear-gradient(90deg, #12121a, #1e1e2a);
+      border-bottom: 1px solid #333;
+    }
+
+    .url-bar {
+      flex: 1;
+      display: flex;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 14px;
+      padding: 6px;
+    }
+
+    .url-bar input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: white;
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    .search-btn {
+      background: var(--accent);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .home {
+      padding: 20px;
+      min-height: calc(100vh - 130px);
+      overflow-y: auto;
+      background: radial-gradient(circle at top, #1a1a22, #0b0b0f);
+    }
+
+    .home h1 {
+      color: var(--accent);
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: #1b1b1b;
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 1px solid #333;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+      background: #222;
+    }
+
+    .card span {
+      display: block;
+      margin-top: 5px;
+      font-size: 12px;
+      color: #aaa;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="status-bar">
+  <div>🚀 NovaX Browser</div>
+  <div class="status">Online</div>
+</div>
+
+<div class="tabs">
+  <div class="brand">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#ff3c3c" stroke-width="2">
+      <path d="M12 2c3 3 4 7 4 10s-1 7-4 10c-3-3-4-7-4-10s1-7 4-10z"></path>
+      <circle cx="12" cy="12" r="2"></circle>
+    </svg>
+    <span>NovaX</span>
+  </div>
+
+  <div class="tab active" onclick="showHome()">Home</div>
+</div>
+
+<div class="toolbar">
+  <div class="url-bar">
+    <input type="text" id="url" placeholder="Search or enter URL">
+  </div>
+  <button class="search-btn" onclick="searchNow()">Search</button>
+</div>
+
+<!-- HOME -->
+<div class="home" id="home">
+  <h1>🔥 NovaX Apps & Games</h1>
+
+  <div class="grid">
+    <div class="card" onclick="openSite('https://www.google.com')">🔎 Google<span>Search</span></div>
+    <div class="card" onclick="openSite('https://www.youtube.com')">▶ YouTube<span>Videos</span></div>
+    <div class="card" onclick="openSite('https://www.facebook.com')">📘 Facebook<span>Social</span></div>
+    <div class="card" onclick="openSite('https://www.instagram.com')">📸 Instagram<span>Photos</span></div>
+    <div class="card" onclick="openSite('https://poki.com')">🎮 Games<span>Online Games</span></div>
+    <div class="card" onclick="openSite('https://www.miniclip.com')">🏆 Miniclip<span>Games</span></div>
+    <div class="card" onclick="openSite('https://web.whatsapp.com')">💬 WhatsApp<span>Chat</span></div>
+    <div class="card" onclick="openSite('https://play.google.com')">📱 Apps<span>Download</span></div>
+  </div>
+</div>
+
+<script>
+  const urlInput = document.getElementById("url");
+
+  function formatUrl(url){
+    if(!url) return "";
+    if(!url.includes(".")){
+      return "https://www.google.com/search?q=" + encodeURIComponent(url);
+    }
+    if(!url.startsWith("http")) return "https://" + url;
+    return url;
+  }
+
+  // FIXED SEARCH (no iframe issue)
+  function searchNow(){
+    let q = urlInput.value.trim();
+    if(!q) return;
+
+    window.location.href = formatUrl(q);
+  }
+
+  function openSite(url){
+    window.location.href = url;
+  }
+
+  function showHome(){
+    window.location.href = window.location.origin + window.location.pathname;
+  }
+
+  // ENTER KEY FIX
+  urlInput.addEventListener("keydown", function(e){
+    if(e.key === "Enter") searchNow();
+  });
+</script>
+
+</body>
+</html>
