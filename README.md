@@ -1,0 +1,2 @@
+# NovaX
+Today is beautiful
